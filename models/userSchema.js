@@ -45,7 +45,7 @@ const userSchema = mongoose.Schema({
 		{
 			user: {
 				type: mongoose.Schema.ObjectId,
-				ref: 'User'
+				ref: 'User',
 			}
 		}
 	],
@@ -59,10 +59,11 @@ const userSchema = mongoose.Schema({
 	},
 	dailyLimit:{
 		type:Number,
-		default:null
+		default:10
 	},
 	screenTime:{
-		type:Number
+		type:Number,
+		default:0
 	},
 	isDailyLimitSet:{
 		type:Boolean,

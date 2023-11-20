@@ -14,6 +14,7 @@ const postSchema=mongoose.Schema({
         type:Number,
         default:0
     },
+    likedBy:[],
     posts:[{url:{type:String},uid:{type:String},fileType:{type:String}}],
     createdAt:{
         type:Date,

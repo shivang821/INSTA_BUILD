@@ -35,7 +35,7 @@ async function sendReels(req,res){
         let limit=Number(req.query.limit)||8
         let skip=(page-1)*limit
         const totalResult=await Post.find({postType:"reel"}).count();
-        const reels=await Post.find({postType:"reel"}).skip(skip).limit(limit).populate('createdBy');
+        const reels=await Post.find({postType:"reel"}).sort({createdAt:-1}).skip(skip).limit(limit).populate('createdBy');
         let totalResultSend=((page-1)*limit)+reels.length;
         let hasMore=totalResultSend<totalResult
         res.status(200).json({reels,totalResult,hasMore})
@@ -45,7 +45,7 @@ async function sendReels(req,res){
     }
 }
 
-router.route('/upload').post(upload,uploadData)
+router.route('/upload').post(isAuthenticate,upload,uploadData)
 async function uploadData(req,res){
     try {
         const file=req.file;
@@ -56,5 +56,24 @@ async function uploadData(req,res){
         console.log(error);
     }
 }
-
+router.route('/like/:id').patch(isAuthenticate,likePost)
+async function likePost(req,res){
+    try {
+        let post =await Post.findById(req.params.id)
+         post=await Post.findByIdAndUpdate(req.params.id,{likes:post.likes+1,$push:{likedBy:req.user._id}},{new:true});
+        res.status(200).json({success:true})
+    } catch (error) {
+        console.log(error);
+    }
+}
+router.route('/dislike/:id').patch(isAuthenticate,disLikePost)
+async function disLikePost(req,res){
+    try {
+        let post =await Post.findById(req.params.id)
+         post=await Post.findByIdAndUpdate(req.params.id,{likes:post.likes-1,$pull:{likedBy:req.user._id}},{new:true});
+        res.status(200).json({success:true})
+    } catch (error) {
+        console.log(error);
+    }
+}
 module.exports = router;
